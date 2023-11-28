@@ -3,12 +3,10 @@ const router = express.Router();
 
 const Post = require('../models/Posts');
 
-router.get('/',async(req,res) =>{
+router.get('/posts',async(req,res) =>{
 
     const posts = await Post.find();
-    res.send(posts)
-  
-
+    res.send(posts);
 
 })
 

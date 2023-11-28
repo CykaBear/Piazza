@@ -5,10 +5,11 @@ const mongoose = require('mongoose');
 const bodyParder = require('body-parser')
 require('dotenv/config')
 
-mongoose.connect(process.env.DB_CONNECTOR,()=> {
-  console.log('DB is connected')
-})
+const postRoute = require('./routes/posts');
+app.use('/api/post',postRoute);
+
+mongoose.connect(process.env.DB_CONNECTOR);
 
 app.listen(3000, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running`);
 });

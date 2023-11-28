@@ -1,10 +1,14 @@
 const express = require('express');
 const app = express();
-app.use(express.json()); // for parsing application/json
 
-// Define routes here
+const mongoose = require('mongoose');
+const bodyParder = require('body-parser')
+require('dotenv/config')
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+mongoose.connect(process.env.DB_CONNECTOR,()=> {
+  console.log('DB is connected')
+})
+
+app.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);
 });

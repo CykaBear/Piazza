@@ -22,7 +22,7 @@ npm-debug.log
 .idea/
 .vscode/
 
-.env
+**/.env
 
 # macOS
 **/.DS_Store

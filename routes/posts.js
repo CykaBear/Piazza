@@ -11,31 +11,31 @@ const {postValidation,reactValidation,commentValidation} = require('../validatio
 
 const jsonwebtoken = require('jsonwebtoken')
 
-router.get('/posts',verify,async(req,res) =>{
+router.get('/posts',async(req,res) =>{
 
-    const posts = await Post.find(); //Show the posts to verified(logged in) users only
+    const posts = await Post.find(); //Show all posts
     res.send(posts);
 
 })
 
-router.post('/posts',verify,async(req,res) =>{
+router.post('/posts',async(req,res) =>{
 
     if(req.body.hashtag != "#Politics" && req.body.hashtag != "#Tech" && req.body.hashtag != "#Sports" && req.body.hashtag != "#Health"){
         return res.send({message:"Incorrect hashtag provided!"})
     }
-    const posts = await Post.find({hashtag:req.body.hashtag}); //Show the posts to verified(logged in) users only and filter bashed on hashtag provided
+    const posts = await Post.find({hashtag:req.body.hashtag}); //Show the posts and filter bashed on hashtag provided
     res.send(posts);
 
 })
 
-router.post('/posts/popular',verify,async(req,res) =>{
+router.post('/posts/popular',async(req,res) =>{
 
-    const posts = await Post.find({hashtag:req.body.hashtag}).sort({activity:-1}); //Show the posts to verified(logged in) users only and filter bashed on hashtag provided also sorts based on popularity
+    const posts = await Post.find({hashtag:req.body.hashtag}).sort({activity:-1}); //Show the posts and filter bashed on hashtag provided also sorts based on popularity
     res.send(posts);
 
 })
 
-router.get('/posts/expired',verify,async(req,res) =>{
+router.get('/posts/expired',async(req,res) =>{
 
     const posts = await Post.find({expires:{$lte: Date.now()}}); // Finds all the expired posts and shows them
     res.send(posts);

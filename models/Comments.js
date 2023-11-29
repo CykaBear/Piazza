@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const commentSchema = mongoose.Schema({
+const commentSchema = mongoose.Schema({ 
 
     post_id:{
         type:String

@@ -4,7 +4,7 @@ const router = express.Router();
 const Post = require('../models/Posts');
 const User = require('../models/Users');
 const React = require('../models/Reactions')
-const Comment = require('../models/Comments')
+const Comment = require('../models/Comments') 
 const verify = require('../verifyToken')
 
 const {postValidation,reactValidation,commentValidation} = require('../validations/validations')
@@ -139,13 +139,13 @@ router.post('/posts/comment',verify,async(req,res)=>{
     const reactedPost = await Post.updateOne({_id:postID},{$set:{activity:postActivity + 1}}) // Add 1 activity score to the post
     const comment = new Comment({
         post_id:postID,
-        user_name:userName.user_name,
+        user_name:userName.user_name, //Create a comment object that can be casted to a JSON and stored as an array in the Posts collection
         comment_text:req.body.comment_text,
         date:Date.now()
     })
     try{
         const addedComment = await Post.updateOne({_id:postID},{$push:{comments:comment}})
-        const savedComment = await comment.save()
+        const savedComment = await comment.save() //Add the comment to the specific post and save a copy in the comments collection
         res.send(addedComment.body)
     }catch(err){
         return res.status(400).send({err})

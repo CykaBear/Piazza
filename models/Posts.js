@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const postSchema = mongoose.Schema({
 
-    user:{
+    user_name:{
         type:String
     },
     title:{
@@ -21,7 +21,21 @@ const postSchema = mongoose.Schema({
         type:String
     },
     date:{
-        type:String
+        type:Date
+    },
+    expires:{
+        type:Date
+    },
+    likes:{
+        type:Number,
+        default: 0
+    },
+    comments:{
+        type:Array,
+    },
+    activity:{
+        type:Number,
+        default: 0
     }
 })
 

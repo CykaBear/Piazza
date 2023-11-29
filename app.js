@@ -12,6 +12,6 @@ const authRoute = require('./routes/auth');
 app.use('/api/post',postRoute);
 app.use('/api/user',authRoute);
 mongoose.connect(process.env.DB_CONNECTOR);
-app.listen(3000, () => {
+app.listen(8080, () => {
   console.log(`Server is running`);
 });

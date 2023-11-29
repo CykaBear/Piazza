@@ -24,8 +24,11 @@ COPY package*.json ./
 # Install dependencies.
 RUN npm ci --only=production
 
+EXPOSE 3000
+
 # Copy local code to the container image.
 COPY . ./
 
 # Run the web service on container startup.
 ENTRYPOINT [ "node", "app.js" ]
+

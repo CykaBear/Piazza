@@ -11,14 +11,14 @@ const {postValidation,reactValidation,commentValidation} = require('../validatio
 
 const jsonwebtoken = require('jsonwebtoken')
 
-router.get('/posts',async(req,res) =>{
+router.get('/posts',verify,async(req,res) =>{
 
     const posts = await Post.find(); //Show all posts
     res.send(posts);
 
 })
 
-router.post('/posts',async(req,res) =>{
+router.post('/posts',verify,async(req,res) =>{
 
     if(req.body.hashtag != "#Politics" && req.body.hashtag != "#Tech" && req.body.hashtag != "#Sports" && req.body.hashtag != "#Health"){
         return res.send({message:"Incorrect hashtag provided!"})
@@ -28,16 +28,16 @@ router.post('/posts',async(req,res) =>{
 
 })
 
-router.post('/posts/popular',async(req,res) =>{
+router.post('/posts/popular',verify,async(req,res) =>{
 
     const posts = await Post.find({hashtag:req.body.hashtag}).sort({activity:-1}); //Show the posts and filter bashed on hashtag provided also sorts based on popularity
     res.send(posts);
 
 })
 
-router.get('/posts/expired',async(req,res) =>{
+router.post('/posts/expired',verify,async(req,res) =>{
 
-    const posts = await Post.find({expires:{$lte: Date.now()}}); // Finds all the expired posts and shows them
+    const posts = await Post.find({hashtag:req.body.hashtag,expires:{$lte: Date.now()}}); // Finds all the expired posts and shows them
     res.send(posts);
 
 })
@@ -58,17 +58,18 @@ router.post('/posts/add',verify,async(req,res)=>{
             hashtag:req.body.hashtag,
             location:req.body.location,
             date:Date.now(),
-            expires:req.body.expires
+            expires:new Date(req.body.expires).getTime()
+           
         })
         try{ // Try catch is inside another try catch to give it access to the post var as it's encapsulated
+            
             const savedPost = await post.save()
             return res.send(savedPost.body)
         }catch(err){
-            res.status(400).send({message:error})
+            res.status(400).send({message:err})
         }
     }catch(err){
-        
-        return res.send({err})
+        return res.send(err)
     }
     
 })
@@ -81,11 +82,16 @@ router.post('/posts/like',verify,async(req,res)=>{
     const userID = await jsonwebtoken.verify(req.header('auth-token'),process.env.TOKEN_SECRET) //Convert token ID back to user ID with the token secret
     const postID = req.body.post_id
     const post = await Post.findOne({_id:postID}) //Find the post you want to like/dislike
+    const postUser = await User.findOne({user_name:post.user_name})
+    const userName = await User.findOne({_id:userID}) //Grab the users name and posts username 
     if(!post){
         return res.status(404).send({message:'Post not found'}) //Errors if incorrect postID is entered
     }
     if(Date.now() > post.expires){
         return res.send({message:"Post is expired you can no longer comment or like it"}) //Stops users liking expired posts
+    }
+    if(postUser.user_name == userName.user_name){ //Checks if the poster and reacter are the same person and if so error
+        return res.send({message:"You cannot react to your own comment."})
     }
     const postLikes = post.likes //Grab the likes and activity field for later reference
     const postActivity = post.activity
@@ -125,8 +131,6 @@ router.post('/posts/comment',verify,async(req,res)=>{
     }
     const userID = await jsonwebtoken.verify(req.header('auth-token'),process.env.TOKEN_SECRET) //Convert token ID back to user ID with the token secret
     const userName = await User.findOne({_id:userID._id}) // Get the username from the user database using the user id
-    console.log(userID._id)
-    console.log(userName)
     const postID = req.body.post_id
     const post = await Post.findOne({_id:postID}) //Find the post you want to comment on
     if(!post){

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-console.log("test")
-
 const postSchema = mongoose.Schema({
 
     user_name:{
